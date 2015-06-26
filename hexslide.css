@@ -106,24 +106,27 @@
 
 .hexslide .indicator-container {
 	position: absolute;
-	bottom:-36px;
+	bottom:0;
 	left:50%;
 	font-size: 16px;
 	padding: 15px 5px 5px 5px;
-	-webkit-transform: translateX(-50%);
-	-ms-transform: translateX(-50%);
-	-o-transform: translateX(-50%);
-	transform: translateX(-50%);
+	-webkit-transform: translate(-50%, 90%);
+	-ms-transform: translate(-50%, 90%);
+	-o-transform: translate(-50%, 90%);
+	transform: translateX(-50%, 90%);
 	background: rgba(0, 0, 0, 0.8);
 	border-radius: 5px;
 	opacity: 1;
-	-webkit-transition: bottom 250ms ease-in-out, opacity 250ms ease-in-out;
-	-o-transition: bottom 250ms ease-in-out, opacity 250ms ease-in-out;
-	transition: bottom 250ms ease-in-out, opacity 250ms ease-in-out;
+	-webkit-transition: -webkit-transform 250ms ease-in-out, opacity 250ms ease-in-out;
+	-o-transition: -o-transform 250ms ease-in-out, opacity 250ms ease-in-out;
+	transition: transform 250ms ease-in-out, opacity 250ms ease-in-out;
 }
 
 .hexslide .indicator-container.hide {
-	bottom:0;
+	-webkit-transform: translate(-50%, 0);
+	-ms-transform: translate(-50%, 0);
+	-o-transform: translate(-50%, 0);
+	transform: translate(-50%, 0);
 	opacity: 0;
 }
 
