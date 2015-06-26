@@ -1,0 +1,47 @@
+Beta 2 ( Current ):
+	* Fixed setting object
+	- Removed global settings
+	* Fixed slideshows sharing settings
+	+ Min width property
+	+ Max width property
+	+ Min height property
+	+ Min width property
+	+ Height property
+	+ Width property
+	* Hidden navigation buttons when outside of show bounds
+	* Fixed indicator container not being visible on mobile
+	* Wrapped navigation in control div
+	+ Slide left OR right depending on ID when using indicators ( if new slide is higher )
+	+ Slide transition
+	+ Animation property
+	* Other minor style changes ( button offset etc... )
+
+Beta 1.3:
+	* Increased handler error catching
+	+ Added autoPlay option
+	* Fixed pauseOnHover
+	+ pauseOnHover support with next, prev and start private func.
+	+ Minified code
+	* Renamed to hexSlide
+	* Allowed pauseOnHover restart to stop timer firing when user navigating
+	+ Added animation stop
+	+ Fixed invalid property name for transition delay in Google Chrome, Firefox and IE
+
+Beta 1: 
+	* Fixed incorrect event handler
+	- Removed timer global from private scope
+	+ Added timer global, slideshowImgs to global scope
+	+ Event delegation
+	+ Event safeguard
+
+Alpha 2 ( FINAL ):
+	+ Finished CSS Feature
+	+ Finished Javascript structure and SIAF
+	+ Completed page.js SIAF compatibility
+	+ Added compatibility with ajax_dynamic.js & aj_page
+
+
+Alpha 1:
+	+ Constructed CSS
+	* Adjusted page.js onload SIAF
+	+ Started skeleton for Javascript

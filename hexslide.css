@@ -1,0 +1,131 @@
+.slide {
+	position: absolute;
+	left:0;
+	width:100%;
+	height: 100%;
+	top:0;
+	background-size: cover;
+	background-position: center;
+}
+
+.hexslide {
+	position: relative;
+	width:100%;
+	height:100%;
+	z-index:1;
+}
+
+.hexslide .slide-btn span:hover {
+	opacity: 1;
+}
+
+/* ONLY EDIT APPEARENCE */
+
+.hexslide .slide-btn span {
+	position: absolute;
+	font-size: 16px;
+	z-index: 2;
+	top:50%;
+	-webkit-transform: translateY(-50%);
+	color:white;
+	display: block;
+	padding:1em;
+	background:crimson;
+	cursor: pointer;
+	opacity: 0.7;
+	visibility: visible;
+	-webkit-transform: translateY(-50%) translateX(0);
+	-ms-transform: translateY(-50%) translateX(0);
+	-o-transform: translateY(-50%) translateX(0);
+	transform: translateY(-50%) translateX(0);
+	-webkit-transition: visibility 0s ease-in-out 0s, padding 0.2s ease-in-out 0s, -webkit-transform 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s;
+	-o-transition: visibility 0s ease-in-out 0s, padding 0.2s ease-in-out 0s, -o-transform 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s;
+	transition: visibility 0s ease-in-out 0s, padding 0.2s ease-in-out 0s, transform 0.2s ease-in-out 0s, opacity 0.2s ease-in-out 0s;
+}
+
+/* EDIT HERE AND BELOW */
+
+.hexslide .right span {
+	right:-3px;
+}
+
+.hexslide .left span {
+	left:-3px;
+}
+
+.hexslide .left span:hover {
+	padding-left:25px;
+}
+
+.hexslide .right span:hover {
+	padding-right: 25px;
+}
+
+.hexslide .slide-btn.hide.right span {
+	opacity: 0;
+	visibility: hidden;
+	-webkit-transition-delay: 0.2s, 0s, 0s, 0s;
+	-o-transition-delay: 0.2s, 0s, 0s, 0s;
+	transition-delay: 0.2s, 0s, 0s, 0s;
+	-webkit-transform: translateY(-50%) translateX(30%);
+	-ms-transform: translateY(-50%) translateX(30%);
+	-o-transform: translateY(-50%) translateX(30%);
+	transform: translateY(-50%) translateX(30%);
+}
+
+.hexslide .slide-btn.hide.left span {
+	opacity: 0;
+	visibility: hidden;
+	-webkit-transition-delay: 0.2s, 0s, 0s, 0s;
+	-o-transition-delay: 0.2s, 0s, 0s, 0s;
+	transition-delay: 0.2s, 0s, 0s, 0s;
+	-webkit-transform: translateY(-50%) translateX(-30%);
+	-ms-transform: translateY(-50%) translateX(-30%);
+	-o-transform: translateY(-50%) translateX(-30%);
+	transform: translateY(-50%) translateX(-30%);
+}
+
+.hexslide .indicator-container {
+	position: absolute;
+	bottom:-36px;
+	left:50%;
+	font-size: 16px;
+	padding: 15px 5px 5px 5px;
+	-webkit-transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	-o-transform: translateX(-50%);
+	transform: translateX(-50%);
+	background: rgba(0, 0, 0, 0.8);
+	border-radius: 5px;
+	opacity: 1;
+	-webkit-transition: bottom 250ms ease-in-out, opacity 250ms ease-in-out;
+	-o-transition: bottom 250ms ease-in-out, opacity 250ms ease-in-out;
+	transition: bottom 250ms ease-in-out, opacity 250ms ease-in-out;
+}
+
+.hexslide .indicator-container.hide {
+	bottom:0;
+	opacity: 0;
+}
+
+.hexslide .indicator-container .indicator {
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	border: 2px solid crimson;
+	margin: 0 6px;
+	border-radius: 50%;
+	cursor: pointer;
+	-webkit-transition: background 250ms ease-in-out, border 500ms ease-in-out;
+	-o-transition: background 250ms ease-in-out, border 500ms ease-in-out;
+	transition: background 250ms ease-in-out, border 500ms ease-in-out;
+}
+
+.hexslide .indicator-container .indicator:hover {
+	background: white;
+}
+
+.hexslide .indicator-container .indicator.active {
+	background: crimson;
+	border-color:white;
+}
