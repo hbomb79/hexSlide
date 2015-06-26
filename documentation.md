@@ -179,12 +179,19 @@ You will have to reset the entire table, so here are the defaults:
 
 	interval: 3000,
 	speed: 500,
+	width: false,
+	height: false,
+	maxheight: false,
+	maxwidth: false,
+	minheight: false,
+	minwidth: false,
 	pauseOnHover: true,
 	autoPlay: true,
 	navigation: true,
 	alwaysShowNav: false,
 	stopAutoOnNav: false,
 	indicators: true,
+	animation: "fade",
 	additionalClass: {
 		slide: false,
 		container: false
@@ -193,7 +200,9 @@ You will have to reset the entire table, so here are the defaults:
 		slide: false,
 		container: false
 	},
-	callback: {	start: function(){} }
+	callback: {
+		start: function(){}
+	}
 
 You can simply copy these, change what you need to, and set the directive to them, OR you can simply target them like so:
 
