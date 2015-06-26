@@ -84,6 +84,13 @@ Available String Settings
 * alwaysShowNav ( def. false )
 * stopAutoOnNav ( def. false )
 * indicators ( def. true )
+* width ( def. false )
+* minwidth ( def. false )
+* maxwidth ( def. false )
+* height ( def. false )
+* maxheight ( def. false )
+* minheight ( def. false )
+* animation ( def. "fade" )
 
 ### Interval ( int )
 The interval is the time ( in ms ) spent waiting between slides ( Only used when autoPlay is true )
@@ -108,6 +115,27 @@ If true autoPlay will be disabled when the user navigates ( using forward/back o
 
 ### indicators ( boolean )
 If true, circles will be created underneath the slide show, one per slide. A user can use these to navigate the slides.
+
+### width ( CSS Property )
+If false or an unknown value is given then the width of the container will be set to that of the img tag before plugin initialization
+
+### height ( CSS Property )
+If false or an unknown value is given then the height of the container will be set to that of the img tag before plugin initialization
+
+### minwidth ( CSS Property )
+If false or an unknown value is given then the min width wont be set. If width is a dynamic value then the container could possibly get *very* small
+
+### maxwidth ( CSS Property )
+If false or an unknown value is given then the max width wont be set. If width is a dynamic value then the container could get *very* large
+
+### maxheight ( CSS Property )
+If false or an unknown value is given then the max height wont be set. If height is a dynamic value then the container could get *very* large
+
+### minheight ( CSS Property )
+If false or an unknown value is given then the min height wont be set. If height is a dynamic value then the container could get *very* large
+
+### animation ( String )
+If false or an unknown value is given, the animation using to change the slides will be a simple fade in/out. If supplied value is string slide, the slides will slide in and out of the window.
 
 
 Available Object Settings
