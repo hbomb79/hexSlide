@@ -15,7 +15,7 @@ We are going to use data-slideshow-src.
 
 Inside of this attribute, we place our image URLs separated using "|" (No Quotes).
 
-### Add the custom attribute
+*Add the custom attribute*
 	<img src="youimg.extension" alt="What is this image?" data-slideshow-src="img.jpg|img2.jpg|img3.jpg|img4.jpg">
 
 Your required HTML code is done now. You may want to target the image to adjust its size and other properties.
@@ -45,7 +45,7 @@ You may *link* the CSS file to your document, or copy & paste the code into your
 
 I *recommend* linking the CSS.
 
-### Link the hexslide.css file to your document, or copy the CSS rules contained inside.
+*Link the hexslide.css file to your document, or copy the CSS rules contained inside.*
 
 
 The Javascript
@@ -160,7 +160,7 @@ The image will change over 1 second every 5 seconds. The container has a backgro
 
 When the plugin has finished, "Done!" will be output to the console and any Javascript listening for a window resize, will fire in case the size of the img (slideshow) has changed.
 
-### Step 3
+### Notes
 
 Nothing, you're done.
 
@@ -171,7 +171,6 @@ http://harryfelton.web44.net/digital_website/help.php#!contact
 
 Email: harryfelton12@gmail.com
 
-### NOTES
 If you want to change the plugin settings permanently ( so you don't have to set the setting each time you call the plugin ) you can change them using the following directive:
 
 	$.fn.hexSlide.defaults;
