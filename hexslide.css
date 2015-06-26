@@ -13,10 +13,29 @@
 	width:100%;
 	height:100%;
 	z-index:1;
+	border: solid 3px crimson;
 }
 
 .hexslide .slide-btn span:hover {
 	opacity: 1;
+}
+
+.hexslide-slide-container {
+	overflow: hidden;
+	position: absolute;
+	height:100%;
+	width:100%;
+	left:0;
+	top:0;
+}
+
+.hexslide-control-container {
+	position: absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	overflow: hidden;
 }
 
 /* ONLY EDIT APPEARENCE */
