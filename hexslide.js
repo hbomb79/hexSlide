@@ -160,22 +160,22 @@ var _G = _G ? _G : false;
 					"data-slide-direction":"backward"
 				});
 				nextTxt = $("<span></span>", {
-					text:"NEXT"
+					text: options.text.next
 				});
 				prevTxt = $("<span></span>", {
-					text:"BACK"
+					text: options.text.previous
 				});
 				if ( options.additionalCSS.nextBtn ) {
-					nextBtn.addClass( options.additionalCSS.nextBtn );
+					nextBtn.css( options.additionalCSS.nextBtn );
 				}
 				if ( options.additionalCSS.nextTxt ) {
-					nextBtn.addClass( options.additionalCSS.nextTxt );
+					nextTxt.css( options.additionalCSS.nextTxt );
 				}
 				if ( options.additionalCSS.prevBtn ) {
-					nextBtn.addClass( options.additionalCSS.prevBtn );
+					prevBtn.css( options.additionalCSS.prevBtn );
 				}
 				if ( options.additionalCSS.prevTxt ) {
-					nextBtn.addClass( options.additionalCSS.prevTxt );
+					prevTxt.css( options.additionalCSS.prevTxt );
 				}
 				if ( !options.alwaysShowNav ) {
 					nextBtn.addClass("hide");
@@ -411,10 +411,18 @@ var _G = _G ? _G : false;
 		},
 		additionalCSS: {
 			slide: false,
-			container: false
+			container: false,
+			nextBtn: false,
+			nextTxt: false,
+			prevBtn: false,
+			prevTxt: false
 		},
 		callback: {
 			start: function(){}
+		},
+		text: {
+			previous: "Back",
+			next: "Next"
 		}
 	}
 

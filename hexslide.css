@@ -15,7 +15,7 @@
 	width:100%;
 	height:100%;
 	z-index:1;
-	border: solid 3px crimson; /* BORDER COLOR - Change this if you like */
+	border: solid 3px black; /* BORDER COLOR - Change this if you like */
 }
 
 .hexslide-slide-container {

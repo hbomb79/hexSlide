@@ -143,12 +143,13 @@ Available Object Settings
 * additionalCSS ( def. false )
 * additionalClass ( def.false )
 * callback ( def. Object [object] )
+* text ( def. Object [object] )
 
 ### additionalCSS ( object )
-The additionalCSS object can contain 1-2 other objects, indexed using *container* or *slide*
+The additionalCSS object can contain 1-2 other objects, indexed using container, slide, nextBtn, nextTxt, prevBtn, prevTxt.
 EG: additionalCSS: { container: { "cssrule": "cssvalue" }, slide: { "cssrule": "cssvalue" } }
 
-Any CSS in the slide index will be applied to each individual slide. Any rules in the container index will be applied to the parent div.hexslide
+Any CSS in the slide index will be applied to each individual slide. Any rules in the container index will be applied to the parent div.hexslide, the prevBtn and nextBtn CSS applies to the div containing the button. The nextTxt and prevBtn applies to the span inside.
 
 ### additionalClass ( object )
 This object can contain 1-2 string values, indexed using either *container* or *slide*
@@ -159,6 +160,12 @@ Mutliple classes must be separated using a *space* not a comma, semi-colon or ot
 ### callback ( object )
 This object currently only contains one index, named *start*. The key must be a function, this function will be called *after* and *every* time the plugin is used.
 EG: callback:{ start: function(){ alert("done!"); } }
+
+### text ( object )
+This object contains two indexs. *previous* and *next*. These indexs must hold a *string* key.
+EG: text: { previous: "Back Button", next: "Next Button" }
+
+The string held within the index, is applied to the appropriate button. By default the previous has a value of "Back" and the next has a value of "Next".
 
 Example Call
 ------------
@@ -231,6 +238,10 @@ You will have to reset the entire table, so here are the defaults:
 	},
 	callback: {
 		start: function(){}
+	},
+	text: {
+		previous: "Back",
+		next: "Next"
 	}
 
 You can simply copy these, change what you need to, and set the directive to them, OR you can simply target them like so:
