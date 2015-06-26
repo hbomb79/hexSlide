@@ -65,11 +65,11 @@
 /* EDIT HERE AND BELOW */
 
 .hexslide .right span {
-	right:-3px;
+	right:0;
 }
 
 .hexslide .left span {
-	left:-3px;
+	left:0;
 }
 
 .hexslide .left span:hover {
