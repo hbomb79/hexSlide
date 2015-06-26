@@ -15,7 +15,8 @@ We are going to use data-slideshow-src.
 
 Inside of this attribute, we place our image URLs separated using "|" (No Quotes).
 
-*Add the custom attribute*
+*Add the custom attribute*  
+
 	<img src="youimg.extension" alt="What is this image?" data-slideshow-src="img.jpg|img2.jpg|img3.jpg|img4.jpg">
 
 Your required HTML code is done now. You may want to target the image to adjust its size and other properties.
