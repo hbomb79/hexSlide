@@ -166,7 +166,7 @@ Nothing, you're done.
 
 Feel free to contact me here:
 	
-http://harryfelton.web44.net/digital_website/help#!contact
+http://harryfelton.web44.net/digital_website/help.php#!contact
 	* Only works with javascript.
 
 Email: harryfelton12@gmail.com
