@@ -282,6 +282,9 @@ var _G = _G ? _G : false;
 				if ( !options.alwaysShowNav ) {
 					indCont.addClass("hide");
 				}
+				indCont.css({
+					"max-width": options.width
+				});
 				
 				if ( !a ) {
 					indCont.appendTo( dummy );
@@ -348,6 +351,9 @@ var _G = _G ? _G : false;
 			var settings = slide_options[ $(this).parents(".hexslide").attr("id").split("-")[1] ] 
 			$currentSlide = $(this).parents(".hexslide").find(".slide:first");
 			currentID = $currentSlide.data("hexslide-id");
+			if ( currentID == ind ) {
+				return;
+			}
 			if ( settings.animation == "slide" ) {
 
 				var newWidth = ( currentID < ind ) ? $currentSlide.outerWidth() / -1 : $currentSlide.outerWidth();
