@@ -1,4 +1,10 @@
-Beta 2.1 ( Current ):
+Beta 2.2:
+	+ Slide safety ( Cant start new animation when one is currently in operation )
+	+ Developer slide_cache object
+	* function indClick
+	+ Setting safety ( interval cannot be less than speed )
+
+Beta 2.1:
 	+ Dynamic settings, settings can now be changed on the fly.
 
 Beta 2:

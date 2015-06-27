@@ -14,7 +14,8 @@ var _G = _G ? _G : false;
 	_G.preserve.slide_done = _G.preserve.slide_done ? true : false;
 	var timers = [],
 		slideshowImgs = [],
-		slide_options = {};
+		slide_options = {},
+		slide_cache = {}
 		// These must be kept outside the cope of the plugin, so they are not reset each time an instance is created. They are still private to the window instance
 
 	$.fn.hexSlide = function( options ){
@@ -42,33 +43,35 @@ var _G = _G ? _G : false;
 					// Already has settings, merge with new and default.
 					var newset;
 					newset = $.extend(true, {}, $.fn.hexSlide.defaults, set, options);
-					slide_options[ id ] = newset;
 					// Stop the slideshow, and restart
 					stop( id )
-					var $slideshow, config;
-					config = slide_options[ id ];
+					var $slideshow;
+					if ( newset.speed > newset.interval ) {
+						console.warn("hexSlide Warning: The interval you set is faster than your speed. To prevent problems your interval has been set to your speed ( " + newset.speed + " )");
+						newset.interval = newset.speed;
+					}
 					// Check if the alwaysShowNav, navigation or indicators setting has been changed. If so then add/remove the elements
 					$slideshow = $("#hexslide-" + id + "-container");
-					if ( $slideshow.children(".hexslide-control-container").length >= 1 && config.navigation == false ) {
+					if ( $slideshow.children(".hexslide-control-container").length >= 1 && newset.navigation == false ) {
 						// Remove back/next buttons
 						$slideshow.children(".hexslide-control-container").remove();
 					}
-					if ( $slideshow.children(".indicator-container").length >= 1 && config.indicators == false ) {
+					if ( $slideshow.children(".indicator-container").length >= 1 && newset.indicators == false ) {
 						// Remove back/next buttons
 						$slideshow.children(".indicator-container").remove();
 					}
-					if ( $slideshow.children(".hexslide-control-container").length <= 0 && config.navigation == true || $slideshow.children(".indicator-container").length <= 0 && config.indicators == true ) {
-						createGUI( $slideshow.children(".hexslide-slide-container").children(".slide") , config, $slideshow, true )
+					if ( $slideshow.children(".hexslide-control-container").length <= 0 && newset.navigation == true || $slideshow.children(".indicator-container").length <= 0 && newset.indicators == true ) {
+						createGUI( $slideshow.children(".hexslide-slide-container").children(".slide") , newset, $slideshow, true )
 						// createGUI will create the required elements
 					}
-					if ( config.alwaysShowNav ) {
+					if ( newset.alwaysShowNav ) {
 						// Show
 						$slideshow.children(".indicator-container").removeClass("hide").end().children(".hexslide-control-container").children(".slide-btn").removeClass("hide");
 					} else {
 						// Hide
 						$slideshow.children(".indicator-container").addClass("hide").end().children(".hexslide-control-container").children(".slide-btn").addClass("hide");
 					}
-					if ( !config.alwaysShowNav || config.pauseOnHover ) {
+					if ( !newset.alwaysShowNav || newset.pauseOnHover ) {
 						if ( !$slideshow.hasClass("hexslide-hover") ) {
 							$slideshow.addClass("hexslide-hover")
 						}
@@ -76,32 +79,40 @@ var _G = _G ? _G : false;
 						// Dont need the hover class.
 						$slideshow.removeClass("hexslide-hover")
 					}
-					$slideshow.width( config.width ? config.width : width )
-					$slideshow.height( config.height ? config.height : height )
+					$slideshow.width( newset.width ? newset.width : width )
+					$slideshow.height( newset.height ? newset.height : height )
 					$slideshow.css({
-						"max-height": ( config.maxheight ) ? config.maxheight : "",
-						"max-width": ( config.maxwidth ) ? config.maxwidth : "",
-						"min-height": ( config.minheight ) ? config.minheight : "",
-						"min-width": ( config.minwidth ) ? config.minwidth : "",
+						"max-height": ( newset.maxheight ) ? newset.maxheight : "",
+						"max-width": ( newset.maxwidth ) ? newset.maxwidth : "",
+						"min-height": ( newset.minheight ) ? newset.minheight : "",
+						"min-width": ( newset.minwidth ) ? newset.minwidth : "",
 					})
-					if ( config.autoPlay ) {
+					// Get all slides, position at left 0, opacity 1 and display:none
+					$slideshow.children(".hexslide-slide-container").children(".slide").hide().css("left", 0);
+					$slideshow.children(".hexslide-slide-container").children(".slide:first").show();
+					slide_options[ id ] = newset; // Any changes made to the new config applied now.
+					if ( newset.autoPlay ) {
 						timers[id] = setInterval(function(){
 							// Emulate a click on the next button
 							nextSlide.call( $slideshow.find(".hexslide-slide-container"), true );
-						}, config.interval)
+						}, newset.interval)
 					}
-					if ( typeof config.callback.start == "function" ) {
-						config.callback.start();
+					if ( typeof newset.callback.start == "function" ) {
+						newset.callback.start();
 					}
 				}
 			} else {
 				var options = $.extend(true, {}, $.fn.hexSlide.defaults, options);
+				// If the speed is less than the interval, set the interval to speed and notify user
+				if ( options.speed > options.interval ) {
+					console.warn("hexSlide Warning: The interval you set is faster than your speed. To prevent problems your interval has been set to your speed ( " + options.speed + " )");
+					options.interval = options.speed;
+				}
 				// This instances settings should be stored with this slide so that other instances can access them too.
 				container = listArray[i];
 				$container = $(container);
 
 				var item = i+lastID;
-				slide_options[item] = options;
 				// Use ITEM so we dont overwrite other settings and so the index matches the ID number.
 				width = $container.outerWidth();
 				height = $container.outerHeight();
@@ -187,6 +198,9 @@ var _G = _G ? _G : false;
 				if ( typeof options.callback.start == "function" ) {
 					options.callback.start();
 				}
+				slide_options[item] = options;
+				slide_cache[ item ] = {};
+				slide_cache[ item  ].moving = false;
 				start( item );
 			}
 		}
@@ -296,8 +310,14 @@ var _G = _G ? _G : false;
 
 		function nextSlide( auto ) {
 			// Clear the corresponding interval to stop the slideshow
+			if ( slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving ) {
+				// Already animating
+				return;
+			} else {
+				slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = true;
+			}
 			if (!auto) { clearInterval(timers[($(this).parents(".hexslide").attr('id').split('-')[1])]) }
-			var settings = slide_options[ $(this).parents(".hexslide").attr("id").split("-")[1] ] 
+			var settings = slide_options[ $(this).parents(".hexslide").attr("id").split("-")[1] ];
 			// Load settings for this slideshow. To do this get the ID of the slideshow and access the slide_options object providing the ID number as the index
 			// For sliding, animate the css of the current image to match the width ( global )
 			// set the css of the new slide to left of slideshow. Then animate to 0
@@ -316,12 +336,12 @@ var _G = _G ? _G : false;
 				});
 				$(this).parents(".hexslide").find(".slide").filter(function(){
 					return $(this).data("hexslide-id") == currentID;
-				}).stop().css("left", $currentSlide.outerWidth()).show().animate( { "left": 0 }, settings.speed ).insertBefore( $currentSlide );
+				}).stop().css("left", $currentSlide.outerWidth()).show().animate( { "left": 0 }, settings.speed, function(){ slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = false; }).insertBefore( $currentSlide );
 			} else {
 				$currentSlide.stop().fadeOut( settings.speed );
 				$(this).parents(".hexslide").find(".slide").filter(function(){
 					return $(this).data("hexslide-id") == currentID;
-				}).fadeIn( settings.speed ).insertBefore( $currentSlide );
+				}).fadeIn( settings.speed, function(){ slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = false; } ).insertBefore( $currentSlide );
 			}
 
 			if ( settings.stopAutoOnNav && !auto ) {
@@ -345,6 +365,12 @@ var _G = _G ? _G : false;
 		}
 
 		function indClick() {
+			if ( slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving ) {
+				// Already animating
+				return;
+			} else {
+				slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = true;
+			}
 			// Find the slide with the correct ID, fade in and move to top of queue
 			var $currentSlide, currentID, ind;
 			ind = $(this).data("hexslide-id");
@@ -363,13 +389,13 @@ var _G = _G ? _G : false;
 				})
 				$(this).parents(".hexslide").find(".slide").filter(function(){
 					return $(this).data("hexslide-id") == ind;
-				}).stop().css("left", newWidthNext).show().animate( { "left": 0 }, settings.speed ).insertBefore( $currentSlide );
+				}).stop().css("left", newWidthNext).show().animate( { "left": 0 }, settings.speed, function(){ slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = false; } ).insertBefore( $currentSlide );
 
 			} else {
 				$currentSlide.stop().fadeOut( settings.speed );
 				$(this).parents(".hexslide").find(".slide").filter(function(){
 					return $(this).data("hexslide-id") == ind;
-				}).stop().fadeIn( settings.speed ).insertBefore( $currentSlide );
+				}).stop().fadeIn( settings.speed, function(){ slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = false; } ).insertBefore( $currentSlide );
 			}
 
 			updateInd( ind, $currentSlide.parent(".hexslide-slide-container") );
@@ -382,6 +408,12 @@ var _G = _G ? _G : false;
 
 		function prevSlide( auto ) {
 			// Clear the corresponding interval to stop the slideshow
+			if ( slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving ) {
+				// Already animating
+				return;
+			} else {
+				slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = true;
+			}
 			if (!auto) { clearInterval(timers[($(this).parents(".hexslide").attr('id').split('-')[1])]) }
 			var settings = slide_options[ $(this).parents(".hexslide").attr("id").split("-")[1] ] 
 			var $currentSlide = $(this).parents(".hexslide").find(".slide:first");
@@ -402,13 +434,13 @@ var _G = _G ? _G : false;
 
 				$(this).parents(".hexslide").find(".slide").filter(function(){
 					return $(this).data("hexslide-id") == currentID;
-				}).stop().css({"left": ($currentSlide.outerWidth()) /-1 }).show().animate( {"left": 0}, settings.speed ).insertBefore( $currentSlide );
+				}).stop().css({"left": ($currentSlide.outerWidth()) /-1 }).show().animate( {"left": 0}, settings.speed, function(){ slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = false; } ).insertBefore( $currentSlide );
 			} else {
 				$currentSlide.stop().fadeOut( settings.speed );
 
 				$(this).parents(".hexslide").find(".slide").filter(function(){
 					return $(this).data("hexslide-id") == currentID;
-				}).fadeIn( settings.speed ).insertBefore( $currentSlide );
+				}).fadeIn( settings.speed, function(){ slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = false; } ).insertBefore( $currentSlide );
 			}
 
 			if ( settings.stopAutoOnNav ) {
