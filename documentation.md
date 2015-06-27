@@ -36,7 +36,7 @@ Only change rules like background, color, opacity. But not positioning or transi
 
 After this comment:
 
-	/* ONLY EDIT APPEARENCE */
+	/* EDIT HERE AND BELOW */
 
 edit the rules *however* you like. Be aware that editing the rules may result in unwanted changes.
 
