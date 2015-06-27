@@ -1,4 +1,7 @@
-Beta 2 ( Current ):
+Beta 2.1 ( Current ):
+	+ Dynamic settings, settings can now be changed on the fly.
+
+Beta 2:
 	* Fixed setting object
 	- Removed global settings
 	* Fixed slideshows sharing settings
