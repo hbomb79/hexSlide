@@ -1,11 +1,9 @@
-// This function will target a particular target, using no delegation ( because it needs to be recalled each time ).
-// When the plugin is initialized the plugin will
+// HexSlide Version beta 2.6 | Copyright (C) 2015 HexCode, Harry Felton.
 
-var _G = _G ? _G : false;
+var _G = _G ? _G : {};
 (function( $, window, document, undefined ){
 	if ( !_G ) {
 		// Users without this super global. We create it now.
-		_G = {};
 		_G.preserve = {};
 		_G.variable = {};
 	}
@@ -16,7 +14,7 @@ var _G = _G ? _G : false;
 		slideshowImgs = [],
 		slide_options = {},
 		slide_cache = {}
-		// These must be kept outside the cope of the plugin, so they are not reset each time an instance is created. They are still private to the window instance
+		// These must be kept outside the scope of the plugin, so they are not reset each time an instance is created. They are still private to the window instance
 
 	$.fn.hexSlide = function( options ){
 		var img,
@@ -31,24 +29,30 @@ var _G = _G ? _G : false;
 			currentSlides,
 			height;
 
+		cout( "Plugin started - Debug Mode" )
 		lastID = _G.variable.last_slide_id ? _G.variable.last_slide_id : 0;
+		cout( "_G loaded" )
 		for ( var i = 0; i < listArray.length; i++ ) {
 			// This listArray item is already a slideshow, simply adjust the settings ( using extend again )
 			if ( $(listArray[i]).hasClass("hexslide") ) {
+				cout("slideshow found, extend settings "+id)
 				// Get the ID of the item
 				var id = $( listArray[i] ).attr("id").split("-")[1];
 				var set;
 				set = slide_options[ id ];
 				if ( set ) {
+					cout("extending settings from "+set)
 					// Already has settings, merge with new and default.
 					var newset;
 					newset = $.extend(true, {}, $.fn.hexSlide.defaults, set, options);
+					options = newset;
 					// Stop the slideshow, and restart
 					stop( id )
 					var $slideshow;
-					if ( newset.speed > newset.interval ) {
-						console.warn("hexSlide Warning: The interval you set is faster than your speed. To prevent problems your interval has been set to your speed ( " + newset.speed + " )");
-						newset.interval = newset.speed;
+					if ( newset.speed+100 > newset.interval ) {
+						console.warn("hexSlide Warning: The interval you set is faster than your speed. To prevent problems your interval has been set to your speed+safety ( " + ( newset.speed + 100 ) + " )");
+						newset.interval = newset.speed+100;
+						cout("interval under safety limit, increase to speed + 100ms", "w")
 					}
 					// Check if the alwaysShowNav, navigation or indicators setting has been changed. If so then add/remove the elements
 					$slideshow = $("#hexslide-" + id + "-container");
@@ -66,12 +70,20 @@ var _G = _G ? _G : false;
 					}
 					if ( newset.alwaysShowNav ) {
 						// Show
-						$slideshow.children(".indicator-container").removeClass("hide").end().children(".hexslide-control-container").children(".slide-btn").removeClass("hide");
+						$slideshow.children(".hexslide-control-container").children(".slide-btn").removeClass("hide");
 					} else {
 						// Hide
-						$slideshow.children(".indicator-container").addClass("hide").end().children(".hexslide-control-container").children(".slide-btn").addClass("hide");
+						$slideshow.children(".hexslide-control-container").children(".slide-btn").addClass("hide");
 					}
-					if ( !newset.alwaysShowNav || newset.pauseOnHover ) {
+					if ( newset.alwaysShowIndicators ) {
+						// Show
+						$slideshow.children(".indicator-container").removeClass("hide");
+					} else {
+						// Hide
+						$slideshow.children(".indicator-container").addClass("hide");
+					}
+
+					if ( !newset.alwaysShowNav || newset.pauseOnHover || !newset.alwaysShowIndicators ) {
 						if ( !$slideshow.hasClass("hexslide-hover") ) {
 							$slideshow.addClass("hexslide-hover")
 						}
@@ -88,25 +100,33 @@ var _G = _G ? _G : false;
 						"min-width": ( newset.minwidth ) ? newset.minwidth : "",
 					})
 					// Get all slides, position at left 0, opacity 1 and display:none
+					cout("reinit complete, slideshow " + id + " ready")
 					$slideshow.children(".hexslide-slide-container").children(".slide").hide().css("left", 0);
 					$slideshow.children(".hexslide-slide-container").children(".slide:first").show();
 					slide_options[ id ] = newset; // Any changes made to the new config applied now.
 					if ( newset.autoPlay ) {
-						timers[id] = setInterval(function(){
-							// Emulate a click on the next button
-							nextSlide.call( $slideshow.find(".hexslide-slide-container"), true );
-						}, newset.interval)
+						cout(id+" autoplay start")
+						if ( !newset.shuffle ) {
+							timers[id] = setInterval(function(){
+								// Emulate a click on the next button
+								nextSlide.call( $slideshow.find(".hexslide-slide-container"), true );
+							}, newset.interval)
+						} else {
+							startShuffle( id, newset )
+						}
 					}
 					if ( typeof newset.callback.start == "function" ) {
 						newset.callback.start();
 					}
 				}
 			} else {
+				cout("no slideshow detected, creating")
 				var options = $.extend(true, {}, $.fn.hexSlide.defaults, options);
 				// If the speed is less than the interval, set the interval to speed and notify user
-				if ( options.speed > options.interval ) {
-					console.warn("hexSlide Warning: The interval you set is faster than your speed. To prevent problems your interval has been set to your speed ( " + options.speed + " )");
-					options.interval = options.speed;
+				if ( options.speed+100 > options.interval ) {
+					console.warn("hexSlide Warning: The interval you set is faster than your speed. To prevent problems your interval has been set to your speed+safety ( " + ( options.speed + 100 )+ " )");
+					options.interval = options.speed+100;
+					cout("bad interval, increasing to speed + 100ms", "w")
 				}
 				// This instances settings should be stored with this slide so that other instances can access them too.
 				container = listArray[i];
@@ -121,6 +141,7 @@ var _G = _G ? _G : false;
 					id: "hexslide-" + item + "-container",
 					class: "hexslide"
 				});
+				cout("dummy start")
 
 				dummy.width( options.width ? options.width : width )
 				dummy.height( options.height ? options.height : height )
@@ -138,9 +159,10 @@ var _G = _G ? _G : false;
 				if ( options.additionalCSS.container ) {
 					dummy.css( options.additionalCSS.container );
 				}
+				cout("processed additionalCSS and additionalClasses")
 
 				// Add a class to be used by event listeners. This indicates the slideshow should be paused when a user hovers on it.
-				if ( options.pauseOnHover || !options.alwaysShowNav ) {
+				if ( options.pauseOnHover || !options.alwaysShowNav || !options.alwaysShowIndicators ) {
 					dummy.addClass("hexslide-hover");
 				}
 				currentSlides = $("<div></div>", {
@@ -156,6 +178,7 @@ var _G = _G ? _G : false;
 					temp_slides.push( temp_imgs[p] );
 				}
 				createGUI( temp_slides );
+				cout("GUI ready")
 
 				img = $("<div></div>", {
 					class: "slide",
@@ -164,6 +187,7 @@ var _G = _G ? _G : false;
 					},
 					"data-hexslide-id": 0
 				}).appendTo( currentSlides );
+				cout("originalsrc ready")
 
 				if ( options.additionalClass.slide ) {
 					img.addClass( options.additionalClass.slide );
@@ -191,6 +215,7 @@ var _G = _G ? _G : false;
 				}
 				currentSlides.appendTo( dummy );
 				$container.replaceWith( dummy );
+				cout("show replaced")
 				$("#hexslide-"+item+"-container").children(".hexslide-slide-container").children(".slide:gt(0)").hide();
 				// Container done, now adjust stuff!
 				lastID++;
@@ -205,25 +230,92 @@ var _G = _G ? _G : false;
 			}
 		}
 
+		function cout( message, mode, id ) {
+			var settings = id ? slide_options[ id ] : options;
+			if ( !settings || !settings.debug ) {
+				return;
+			}
+			message = "hexSlide: "+message;
+			switch( mode ) {
+				case "e":
+					console.error( message )
+					break;
+				case "w":
+					console.warn( message )
+					break;
+				case "l":
+					console.log( message )
+					break;
+				default:
+					console.log( message );
+					break;
+			}
+		}
+
+		function startShuffle( i, settings ) {
+			generateShuffle( i ).done(function(slides){
+				cout("slide order shuffled")
+				// We have the shuffled slides, now we want to log the current shuffle slide using the cache.
+				slide_cache[i].shuffle = {
+					order: slides,
+					current: 0
+				}
+				// They are now stored, when the timer runs grab the current, add one to it and go to that slide.
+				cout("timer starting")
+				timers[i] = setInterval(function(){
+					var slide, slideid, ind;
+					slide = slide_cache[i].shuffle.order[ slide_cache[i].shuffle.current ];
+					slideid = $(slide).data("hexslide-id");
+					if ( $(slide).parents(".hexslide").children(".hexslide-slide-container").children(".slide:first").data("hexslide-id") == slideid ) {
+						slide_cache[i].shuffle.current++;
+						slide = slide_cache[i].shuffle.order[ slide_cache[i].shuffle.current ];
+						slideid = $(slide).data("hexslide-id");
+						cout("advancing slide ahead by 1")
+					}
+					ind = $(slide).parents(".hexslide").children(".indicator-container").children(".indicator").filter(function(){
+						return $(this).data("hexslide-id") == slideid
+					})
+					indClick.call( ind )
+					slide_cache[i].shuffle.current++;
+					if ( slide_cache[i].shuffle.current > slide_cache[i].shuffle.order.length-1 ) {
+						slide_cache[i].shuffle.current = 0;
+						generateShuffle( i ).done( function(slides) {
+							slide_cache[i].shuffle.order = slides;
+							cout("regenerated slides")
+						})
+					}
+				}, settings.interval)
+			});
+		}
+
 		function start( i ) {
 			var $slideshow;
 			$slideshow = $("#hexslide-" + i + "-container");
 			var settings = slide_options[ i ]
 			if ( !settings.autoPlay ) {
+				cout("autplay disabled")
 				return;
 			}
 			if (timers[i]) {
 				// Timer already set, clear it just incase it is still running.
 				clearInterval( timers[i] );
+				cout("reset timer")
 			}
-			timers[i] = setInterval(function(){
-				// Emulate a click on the next button
-				nextSlide.call( $slideshow.find(".hexslide-slide-container"), true );
-			}, settings.interval)
+			if ( !settings.shuffle ) {
+				cout("starting timer")
+				timers[i] = setInterval(function(){
+					// Emulate a click on the next button
+					nextSlide.call( $slideshow.find(".hexslide-slide-container"), true );
+				}, settings.interval)
+			} else {
+				// Use shuffle.
+				startShuffle( i, settings )
+			}
 		}
 
 		function stop( i ) {
 			clearTimeout(timers[i]);
+			cout("timer stopped")
 		}
 
 		function createGUI( id, cfg, applyTo, a ) {
@@ -265,14 +357,18 @@ var _G = _G ? _G : false;
 					nextBtn.addClass("hide");
 					prevBtn.addClass("hide");
 				}
+				cout("appending text to button")
 				nextTxt.appendTo(nextBtn);
 				prevTxt.appendTo(prevBtn);
 				nextBtn.appendTo( controls );
 				prevBtn.appendTo( controls );
+				cout("buttons appended to panel")
 				if ( !a ) {
 					controls.appendTo( dummy );
+					cout("appended to hexslide container")
 				} else {
 					controls.insertBefore( dummy.children(".hexslide-slide-container") )
+					cout("instered above hexslide container")
 				}
 			}
 
@@ -283,6 +379,7 @@ var _G = _G ? _G : false;
 					class: "indicator-container"
 				});
 				slides = id;
+				cout("creating indicators")
 				for ( var i = 0; i < slides.length; i++ ) {
 					var ind = $("<span></span>", {
 						class: "indicator",
@@ -293,7 +390,7 @@ var _G = _G ? _G : false;
 						ind.addClass("active");
 					}
 				}
-				if ( !options.alwaysShowNav ) {
+				if ( !options.alwaysShowIndicators ) {
 					indCont.addClass("hide");
 				}
 				indCont.css({
@@ -305,13 +402,49 @@ var _G = _G ? _G : false;
 				} else {
 					indCont.insertBefore( dummy.children(".hexslide-slide-container") )
 				}
+				cout("indicators ready")
 			}
+		}
+
+		function getRandomInt(min, max) {
+		    return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		function generateShuffle( slideshow ) {
+			// Generate random number, get slide, append to array if not already. When done return the array for the autplay to play from.
+			var shuf, slides, id, config, d;
+			d = $.Deferred();
+			shuf = [];
+			var show = $("#hexslide-"+slideshow+"-container")
+			slides = show.children(".hexslide-slide-container").children(".slide");
+			id = show.attr("id").split("-")[1];
+			config = slide_cache[ id ];
+			cout("generating")
+			while ( true ) {
+				// Random number
+				var rand;
+				rand = getRandomInt(0, slides.length-1)
+				if ( $.inArray( slides[ rand ], shuf ) == -1 ) {
+					shuf.push( slides[ rand ] );
+					cout("pushed "+rand)
+				} else {
+					cout("ignored "+rand)
+				}
+				if ( shuf.length == slides.length ) {
+					d.resolve(shuf);
+					cout("generation complete")
+					break;
+				}
+			}
+			// All slides have been processed.
+			return d;
 		}
 
 		function nextSlide( auto ) {
 			// Clear the corresponding interval to stop the slideshow
 			if ( slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving ) {
 				// Already animating
+				cout("already animating, ignoring click", "w")
 				return;
 			} else {
 				slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = true;
@@ -329,6 +462,7 @@ var _G = _G ? _G : false;
 			// If current ID is greater than the amount of slides, then set to 0
 			if ( currentID > $(this).parents(".hexslide").find(".slide").length-1 ) {
 				currentID = 0;
+				cout("new slide greater than total, setting to zero")
 			}
 			if ( settings.animation == "slide" ) {
 				$currentSlide.stop().animate({"left": ( $currentSlide.outerWidth() ) /-1 }, settings.speed, function(){
@@ -348,10 +482,12 @@ var _G = _G ? _G : false;
 				//$(this).parents(".hexslide").removeClass("hexslide-hover");
 				settings.autoPlay = false;
 				stop( $(this).parents(".hexslide").attr('id').split("-")[1] );
+				cout("stopped auto as stopAutoOnNav is true")
 			} else if ( !auto && settings.autoPlay && !settings.pauseOnHover ) {
 				// User clicked, auto play is enabled. Stop and restart the timer to prevent it from changing while user is navigating
 				stop( $(this).parents(".hexslide").attr('id').split("-")[1] );
 				start( $(this).parents(".hexslide").attr('id').split("-")[1] );
+				cout("reset timer")
 			}
 			var newID = $(this).parents(".hexslide").find('.slide:first').data("hexslide-id");
 				updateInd( newID, this );
@@ -362,11 +498,13 @@ var _G = _G ? _G : false;
 			$(sibling).parents(".hexslide").children(".indicator-container").find(".indicator").filter(function(){
 				return $(this).data("hexslide-id") == newID;
 			}).addClass("active");
+			cout("updated indicators")
 		}
 
 		function indClick() {
 			if ( slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving ) {
 				// Already animating
+				cout("already animating, ignoring click", "w")
 				return;
 			} else {
 				slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = true;
@@ -378,6 +516,7 @@ var _G = _G ? _G : false;
 			$currentSlide = $(this).parents(".hexslide").find(".slide:first");
 			currentID = $currentSlide.data("hexslide-id");
 			if ( currentID == ind ) {
+				slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = false;
 				return;
 			}
 			if ( settings.animation == "slide" ) {
@@ -399,10 +538,15 @@ var _G = _G ? _G : false;
 			}
 
 			updateInd( ind, $currentSlide.parent(".hexslide-slide-container") );
-			if ( settings.autoPlay && !settings.pauseOnHover ) {
+			if ( settings.stopAutoOnNav ) {
+				settings.autoPlay = false;
+				stop( $(this).parents(".hexslide").attr('id').split("-")[1] );
+				cout("stopped auto as stopAutoOnNav is true")
+			} else if ( settings.autoPlay && !settings.pauseOnHover ) {
 				// User clicked, auto play is enabled. Stop and restart the timer to prevent it from changing while user is navigating
 				stop( $(this).parents(".hexslide").attr('id').split("-")[1] );
 				start( $(this).parents(".hexslide").attr('id').split("-")[1] );
+				cout("reset timer")
 			}
 		}
 
@@ -410,6 +554,7 @@ var _G = _G ? _G : false;
 			// Clear the corresponding interval to stop the slideshow
 			if ( slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving ) {
 				// Already animating
+				cout("already animating, ignoring click", "w")
 				return;
 			} else {
 				slide_cache[ $(this).parents(".hexslide").attr("id").split("-")[1] ].moving = true;
@@ -424,6 +569,7 @@ var _G = _G ? _G : false;
 			if ( currentID < 0 ) {
 				currentID = $(this).parents(".hexslide").find(".slide").length;
 				currentID -= 1;
+				cout("new slide is out of bounds, setting to last slide")
 			}
 
 			// Get the current slide, animate forward
@@ -446,48 +592,55 @@ var _G = _G ? _G : false;
 			if ( settings.stopAutoOnNav ) {
 				$(this).parents(".hexslide").removeClass("hexslide-hover");
 				stop( $(this).parents(".hexslide").attr('id').split("-")[1] );
+				cout("stopped auto as stopAutoOnNav is true")
 			} else if ( settings.autoPlay && !settings.pauseOnHover ) {
 				// User clicked, auto play is enabled. Stop and restart the timer to prevent it from changing while user is navigating
 				stop( $(this).parents(".hexslide").attr('id').split("-")[1] );
 				start( $(this).parents(".hexslide").attr('id').split("-")[1] );
+				cout("reset timer")
 			}
 			var newID = $(this).parents(".hexslide").find('.slide:first').data("hexslide-id");
 			updateInd( newID, this );
 		}
 
 
-		$(window).on("aj_start", function() {
-			for ( var i = 0; i < timers.length; i++ ) {
-				clearTimeout(timers[i]);
-			}
-		})
 		if ( !_G.preserve.slide_done ) {
 			_G.preserve.slide_done = true;
 			// Stop the slideshow when hovering. This only needs to be run once per session because it uses delegation
 			// The options table should NOT be used.
+			$(window).on("aj_start", function() {
+				cout("aj_start found. Clearing all timers")
+				for ( var i = 0; i < timers.length; i++ ) {
+					clearTimeout(timers[i]);
+					cout("cleared "+i)
+				}
+			})
 			$("body").on("mouseenter", ".hexslide.hexslide-hover", function(){
 				// get settings for this slide
 				var settings = slide_options[ $(this).attr('id').split('-')[1] ];
 				// Stop slideshow
 				if ( settings.pauseOnHover ) { stop( $(this).attr('id').split('-')[1] ) }
 				// Show navigation
-				if ( !settings.alwaysShowNav ) {
+				if ( !settings.alwaysShowNav && settings.navigation ) {
 					$(this).find(".slide-btn").removeClass("hide");
-					if ( settings.indicators ) {
-						$(this).find(".indicator-container").removeClass("hide");
-					}
+					
 				}
+				if ( !settings.alwaysShowIndicators && settings.indicators ) {
+					$(this).find(".indicator-container").removeClass("hide");
+				}
+				cout("mouse entered hexslide slideshow bounds")
 			}).on("mouseleave", ".hexslide.hexslide-hover", function(){
 				// Get settings
 				var settings = slide_options[ $(this).attr('id').split('-')[1] ]
 				// Restart slideshow
 				if ( settings.pauseOnHover ) { start( $(this).attr('id').split('-')[1] ) }
-				if ( !settings.alwaysShowNav ) {
+				if ( !settings.alwaysShowNav && settings.navigation ) {
 					$(this).find(".slide-btn").addClass("hide");
-					if ( settings.indicators ) {
-						$(this).find(".indicator-container").addClass("hide");
-					}
 				}
+				if ( !settings.alwaysShowIndicators && settings.indicators ) {
+					$(this).find(".indicator-container").addClass("hide");
+				}
+				cout("mouse left hexslide slideshow bounds")
 			});
 			$("body").on("click", ".slide-btn", function( e ){
 				var dir;
@@ -497,18 +650,22 @@ var _G = _G ? _G : false;
 				} else if ( dir == "backward" ) {
 					prevSlide.call( this );
 				}
+				cout("directional button clicked")
 			})
 			$("body").on("click", ".indicator", function( e ){
 				indClick.call( this );
+				cout("indicator clicked")
 			})
-
+			cout("jQuery event delegation completed, waiting for events.")
 		}
+		return this;
 
 	}
 
 	$.fn.hexSlide.defaults = {
 		interval: 3000,
 		speed: 500,
+		shuffle: false,
 		width: false,
 		height: false,
 		maxheight: false,
@@ -519,9 +676,11 @@ var _G = _G ? _G : false;
 		autoPlay: true,
 		navigation: true,
 		alwaysShowNav: false,
+		alwaysShowIndicators: false,
 		stopAutoOnNav: false,
 		indicators: true,
-		animation: "fade",
+		animation: false,
+		debug: false,
 		additionalClass: {
 			slide: false,
 			container: false

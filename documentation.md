@@ -82,7 +82,7 @@ Available String Settings
 * pauseOnHover ( def. true ) *
 * autoPlay ( def. true ) *
 * navigation ( def. true ) *
-* alwaysShowNav ( def. false ) 
+* alwaysShowNav ( def. false ) *
 * stopAutoOnNav ( def. false ) *
 * indicators ( def. true ) *
 * width ( def. false ) *
@@ -91,7 +91,10 @@ Available String Settings
 * height ( def. false ) *
 * maxheight ( def. false ) *
 * minheight ( def. false ) *
-* animation ( def. "fade" ) *
+* animation ( def. false ) *
+* shuffle ( def. false ) *
+* alwaysShowIndicators ( def. false ) *
+* debug ( def. false )
 
 ### Interval ( int )
 The interval is the time ( in ms ) spent waiting between slides ( Only used when autoPlay is true )
@@ -109,7 +112,10 @@ If true the slide show will use the interval to automatically play the slide-sho
 If true Back and Next buttons will be created and can be used to navigate the slide-show
 
 ### alwaysShowNav ( boolean )
-If true, the navigation and indicators will not hide them selves when the user is not hovering on the slide-show
+If true, the navigation will not hide them selves when the user is not hovering on the slide-show
+
+### alwaysShowIndicators ( boolean )
+If true, the indicators will not hide them selves when the user is not hovering on the slide-show
 
 ### stopAutoOnNav ( boolean )
 If true autoPlay will be disabled when the user navigates ( using forward/back or indicator )
@@ -137,6 +143,14 @@ If false or an unknown value is given then the min height wont be set. If height
 
 ### animation ( String )
 If false or an unknown value is given, the animation using to change the slides will be a simple fade in/out. If supplied value is string slide, the slides will slide in and out of the window.
+
+### shuffle ( boolean )
+If true the slideshow will randomize the order of the slides. It will do this by generating an order every time the slideshow loops.
+
+### debug ( boolean )
+This setting should only be used by developers while making changes. The debug fills the console with information that is useful when debugging problems, not so much for a user of the website.
+
+
 
 
 Any setting above that has an "*" next to it means that the setting is dynamic. Therefore after starting the plugin you can target the slideshow ( using our Class objects below ) and simply call hexSlide containing only the settings you want to change.
@@ -175,11 +189,15 @@ EG: additionalCSS: { container: { "cssrule": "cssvalue" }, slide: { "cssrule": "
 
 Any CSS in the slide index will be applied to each individual slide. Any rules in the container index will be applied to the parent div.hexslide, the prevBtn and nextBtn CSS applies to the div containing the button. The nextTxt and prevBtn applies to the span inside.
 
+The reason this exists is because .css cannot be used on the inital call of the plugin because the img tag is removed and replaced. This also allows you to adjust the css of other elements inside without using callbacks.
+
 ### additionalClass ( object )
 This object can contain 1-2 string values, indexed using either *container* or *slide*
 EG: additionalClass: { container: "my-container-class", slide: "my-slide-class and-another-slide-class" }
 
 Mutliple classes must be separated using a *space* not a comma, semi-colon or other character
+
+The reason this exists is because .addClass/.removeClass cannot be used on the inital call of the plugin because the img tag is removed and replaced. This also allows you to add/remove classes on the slides inside without using callbacks
 
 ### callback ( object ) * ( This object setting is called each time, changing it will work )
 This object currently only contains one index, named *start*. The key must be a function, this function will be called *after* and *every* time the plugin is used.
@@ -242,35 +260,44 @@ If you want to change the plugin settings permanently ( so you don't have to set
 
 You will have to reset the entire table, so here are the defaults:
 
-	interval: 3000,
-	speed: 500,
-	width: false,
-	height: false,
-	maxheight: false,
-	maxwidth: false,
-	minheight: false,
-	minwidth: false,
-	pauseOnHover: true,
-	autoPlay: true,
-	navigation: true,
-	alwaysShowNav: false,
-	stopAutoOnNav: false,
-	indicators: true,
-	animation: "fade",
-	additionalClass: {
-		slide: false,
-		container: false
-	},
-	additionalCSS: {
-		slide: false,
-		container: false
-	},
-	callback: {
-		start: function(){}
-	},
-	text: {
-		previous: "Back",
-		next: "Next"
+	$.fn.hexSlide.defaults = {
+		interval: 3000,
+		speed: 500,
+		shuffle: false,
+		width: false,
+		height: false,
+		maxheight: false,
+		maxwidth: false,
+		minheight: false,
+		minwidth: false,
+		pauseOnHover: true,
+		autoPlay: true,
+		navigation: true,
+		alwaysShowNav: false,
+		alwaysShowIndicators: false,
+		stopAutoOnNav: false,
+		indicators: true,
+		animation: false,
+		debug: false,
+		additionalClass: {
+			slide: false,
+			container: false
+		},
+		additionalCSS: {
+			slide: false,
+			container: false,
+			nextBtn: false,
+			nextTxt: false,
+			prevBtn: false,
+			prevTxt: false
+		},
+		callback: {
+			start: function(){}
+		},
+		text: {
+			previous: "Back",
+			next: "Next"
+		}
 	}
 
 You can simply copy these, change what you need to, and set the directive to them, OR you can simply target them like so:
@@ -279,6 +306,8 @@ You can simply copy these, change what you need to, and set the directive to the
 
 Now unless specified when running the plugin, the interval will be 4 seconds, instead of three.
 
-If any of these defaults are missing the program may crash or not function correctly, because of this the second method of default adjustment is *recommended*
+If any of these defaults are missing the program may crash or not function correctly, because of this the second method of default adjustment is *recommended*.
+
+When changing a default always check its object type. These are specified under the headers *available string settings* and *available object settings*. If you change a default to the incorrect type the plugin may crash.
 
 Changing the global defaults is dangerous and can result in undesired changes.

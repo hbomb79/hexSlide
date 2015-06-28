@@ -1,3 +1,13 @@
+Beta 2.6 ( Current ):
+	+ alwaysShowIndicators setting. alwaysShowNav now only controls the next/back buttons.
+	+ shuffle mode. Slides displayed in random order, order re generated each time a full loop occurs.
+	* increased safety limit for interval+speed. The interval must be at least 100ms longer than the speed to prevent spamming, lag and crashing.
+	* fixed slide disappearing if speed too slow of the window is resized.
+	+ debug setting, allows user to see important information while the show runs.
+	* All settings are now dynamic ( except debug which is not really for users and is not on a slideshow basis ).
+	+ cout debug output.
+	* window aj_start has been moved to correct location.
+
 Beta 2.2:
 	+ Slide safety ( Cant start new animation when one is currently in operation )
 	+ Developer slide_cache object
@@ -44,7 +54,7 @@ Beta 1:
 	+ Event delegation
 	+ Event safeguard
 
-Alpha 2 ( FINAL ):
+Alpha 2 ( FINAL ALPHA ):
 	+ Finished CSS Feature
 	+ Finished Javascript structure and SIAF
 	+ Completed page.js SIAF compatibility
