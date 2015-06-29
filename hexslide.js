@@ -1,5 +1,7 @@
 // HexSlide Version beta 2.6 | Copyright (C) 2015 HexCode, Harry Felton.
 
+// If mobile tap is not on button, toggle nav visibility. Use delegation on the body hexslide. Dont toggle if the user clicks off of the slideshow. While visible pause slideshow.
+
 var _G = _G ? _G : {};
 (function( $, window, document, undefined ){
 	if ( !_G ) {
@@ -659,6 +661,8 @@ var _G = _G ? _G : {};
 			cout("jQuery event delegation completed, waiting for events.")
 		}
 		return this;
+		// Return this so that jQuery chaining can continue after this plugin has been called. Although it is unlikely someone will use it as the img tag is removed. Although there are situations 
+		// where it is helpful.
 
 	}
 
