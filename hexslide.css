@@ -88,10 +88,11 @@
 	-webkit-transition-delay: 0.2s, 0s, 0s, 0s;
 	-o-transition-delay: 0.2s, 0s, 0s, 0s;
 	transition-delay: 0.2s, 0s, 0s, 0s;
-	-webkit-transform: translateY(-50%) translateX(30%);
-	-ms-transform: translateY(-50%) translateX(30%);
-	-o-transform: translateY(-50%) translateX(30%);
-	transform: translateY(-50%) translateX(30%);
+	-webkit-transform: translateY(-50%) translateX(70%);
+	-ms-transform: translateY(-50%) translateX(70%);
+	-o-transform: translateY(-50%) translateX(70%);
+	-moz-transform: translateY(-50%) translateX(70%);
+	transform: translateY(-50%) translateX(70%);
 }
 
 .hexslide .slide-btn.hide.left span {
@@ -100,11 +101,11 @@
 	-webkit-transition-delay: 0.2s, 0s, 0s, 0s;
 	-o-transition-delay: 0.2s, 0s, 0s, 0s;
 	transition-delay: 0.2s, 0s, 0s, 0s;
-	-webkit-transform: translateY(-50%) translateX(-30%);
-	-moz-transform: translateY(-50%) translateX(-30%);
-	-ms-transform: translateY(-50%) translateX(-30%);
-	-o-transform: translateY(-50%) translateX(-30%);
-	transform: translateY(-50%) translateX(-30%);
+	-webkit-transform: translateY(-50%) translateX(-70%);
+	-moz-transform: translateY(-50%) translateX(-70%);
+	-ms-transform: translateY(-50%) translateX(-70%);
+	-o-transform: translateY(-50%) translateX(-70%);
+	transform: translateY(-50%) translateX(-70%);
 }
 
 .hexslide .indicator-container {
