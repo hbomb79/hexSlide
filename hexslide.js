@@ -4,12 +4,12 @@
 
 var _G = _G ? _G : {};
 (function( $, window, document, undefined ){
-	if ( !_G ) {
-		// Users without this super global. We create it now.
-		_G.preserve = {};
+	if ( !_G.variable ) {
 		_G.variable = {};
 	}
-
+	if ( !_G.preserve ) {
+		_G.preserve  = {};
+	}
 	_G.variable.last_slide_id = 0;
 	_G.preserve.slide_done = _G.preserve.slide_done ? true : false;
 	var timers = [],
